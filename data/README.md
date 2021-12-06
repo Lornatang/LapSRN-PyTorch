@@ -61,7 +61,7 @@
             - data.mdb
             - lock.mdb
 - valid_lmdb
-    - DRRN
+    - LapSRN
         - TB291_LRbicx3_lmdb
             - data.mdb
             - lock.mdb
