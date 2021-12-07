@@ -130,7 +130,7 @@ Furthermore, our network generates multi-scale predictions in one feed-forward p
 resource-aware applications. Extensive quantitative and qualitative evaluations on benchmark datasets show that the proposed algorithm performs
 favorably against the state-of-the-art methods in terms of speed and accuracy.
 
-[[Paper]](https://arxiv.org/pdf/1704.03915.pdf)
+[[Code]](http://vllab.ucmerced.edu/wlai24/LapSRN) [[Paper]](https://arxiv.org/pdf/1704.03915.pdf)
 
 ```
 @inproceedings{LapSRN,
