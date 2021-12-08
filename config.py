@@ -64,11 +64,13 @@ if mode == "train":
     model_momentum = 0.9
     model_weight_decay = 1e-4
     model_nesterov = False
+    model_clip_gradient = 0.01
 
     # Adam optimizer parameter (faster training and better PSNR)
     # model_optimizer_name = "adam"
     # model_lr = 1e-3
     # model_betas = (0.9, 0.999)
+    # model_clip_gradient = 0.01
 
     # Optimizer scheduler parameter
     lr_scheduler_name = "StepLR"
