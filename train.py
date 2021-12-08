@@ -181,8 +181,10 @@ def train(model, train_dataloader, criterion, optimizer, epoch, scaler, writer) 
         with amp.autocast():
             srx2, srx4, srx8 = model(lrbicx8)
             loss = criterion(srx2, lrbicx4) + criterion(srx4, lrbicx2) + criterion(srx8, hr)
-        # Gradient zoom
+        # Gradient zoom + clip gradient
         scaler.scale(loss).backward()
+        scaler.unscale_(optimizer)
+        torch.nn.utils.clip_grad_norm_(model.parameters(), max_norm=config.model_clip_gradient, norm_type=2.0)
         # Update generator weight
         scaler.step(optimizer)
         scaler.update()
