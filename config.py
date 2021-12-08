@@ -56,11 +56,11 @@ if mode == "train":
     resume_weight = ""
 
     # Total num epochs
-    epochs = 100
+    epochs = 150
 
     # SGD optimizer parameter (less training and low PSNR)
     model_optimizer_name = "sgd"
-    model_lr = 1e-4
+    model_lr = 1e-5
     model_momentum = 0.9
     model_weight_decay = 1e-4
     model_nesterov = False
@@ -68,14 +68,14 @@ if mode == "train":
 
     # Adam optimizer parameter (faster training and better PSNR)
     # model_optimizer_name = "adam"
-    # model_lr = 1e-4
+    # model_lr = 1e-5
     # model_betas = (0.9, 0.999)
     # model_clip_gradient = 1.0
 
     # Optimizer scheduler parameter
     lr_scheduler_name = "StepLR"
     lr_scheduler_step_size = 50
-    lr_scheduler_gamma = 0.1
+    lr_scheduler_gamma = 0.5
 
     print_frequency = 100
 
