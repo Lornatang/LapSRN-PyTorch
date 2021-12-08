@@ -60,20 +60,20 @@ if mode == "train":
 
     # SGD optimizer parameter (less training and low PSNR)
     model_optimizer_name = "sgd"
-    model_lr = 1e-5
+    model_lr = 1e-3
     model_momentum = 0.9
     model_weight_decay = 1e-4
     model_nesterov = False
 
     # Adam optimizer parameter (faster training and better PSNR)
     # model_optimizer_name = "adam"
-    # model_lr = 1e-5
+    # model_lr = 1e-3
     # model_betas = (0.9, 0.999)
 
     # Optimizer scheduler parameter
     lr_scheduler_name = "StepLR"
     lr_scheduler_step_size = 50
-    lr_scheduler_gamma = 0.5
+    lr_scheduler_gamma = 0.1
 
     print_frequency = 100
 
