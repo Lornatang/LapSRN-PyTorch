@@ -105,11 +105,11 @@ Source of original paper results: https://arxiv.org/pdf/1704.03915.pdf
 
 In the following table, the value in `()` indicates the result of the project, and `-` indicates no test.
 
-| Dataset | Scale |    PSNR     | 
-|:-------:|:-----:|:-----------:|
-|  Set5   |   2   | 37.25(****) |
-|  Set5   |   4   | 31.33(****) |
-|  Set5   |   8   | 26.14(****) |
+| Dataset | Scale |       PSNR       | 
+|:-------:|:-----:|:----------------:|
+|  Set5   |   2   | 37.25(**37.19**) |
+|  Set5   |   4   | 31.33(**31.20**) |
+|  Set5   |   8   |   26.14(**-**)   |
 
 Low Resolution / Super Resolution / High Resolution
 <span align="center"><img src="assets/result.png"/></span>
