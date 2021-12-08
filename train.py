@@ -73,8 +73,6 @@ def main():
     print("Start train model.")
     for epoch in range(config.start_epoch, config.epochs):
         train(model, train_dataloader, criterion, optimizer, epoch, scaler, writer)
-        # Update lr
-        scheduler.step()
 
         psnr = validate(model, valid_dataloader, criterion, epoch, writer)
         # Automatically save the model with the highest index
@@ -83,6 +81,9 @@ def main():
         torch.save(model.state_dict(), os.path.join(samples_dir, f"epoch_{epoch + 1}.pth"))
         if is_best:
             torch.save(model.state_dict(), os.path.join(results_dir, "best.pth"))
+
+        # Update lr
+        scheduler.step()
 
     # Save the generator weight under the last Epoch in this stage
     torch.save(model.state_dict(), os.path.join(results_dir, "last.pth"))
@@ -189,7 +190,7 @@ def train(model, train_dataloader, criterion, optimizer, epoch, scaler, writer) 
         scaler.update()
 
         # measure accuracy and record loss
-        psnr = 10. * torch.log10(1. / torch.mean((srx8 - hr) ** 2))
+        psnr = 10. * torch.log10(1. / torch.mean((srx4 - lrbicx2) ** 2))
         losses.update(loss.item(), hr.size(0))
         psnres.update(psnr, hr.size(0))
 
@@ -199,15 +200,13 @@ def train(model, train_dataloader, criterion, optimizer, epoch, scaler, writer) 
 
         # In this Epoch, every one hundred iterations and the last iteration print the loss function
         # and write it to Tensorboard at the same time
-        if index % config.print_frequency == 0 or index == batches:
+        writer.add_scalar("Train/Loss", loss.item(), index + epoch * batches + 1)
+
+        if index % config.print_frequency == 0:
             progress.display(index)
-            writer.add_scalar("Train/Loss", loss.item(), index + epoch * batches + 1)
 
 
 def validate(model, valid_dataloader, criterion, epoch, writer) -> float:
-    # Calculate how many iterations there are under epoch
-    batches = len(valid_dataloader)
-
     batch_time = AverageMeter("Time", ":6.3f")
     losses = AverageMeter("Loss", ":6.6f")
     psnres = AverageMeter("PSNR", ":4.2f")
@@ -218,17 +217,18 @@ def validate(model, valid_dataloader, criterion, epoch, writer) -> float:
 
     with torch.no_grad():
         end = time.time()
-        for index, (lr, _, _, hr) in enumerate(valid_dataloader):
-            lr = lr.to(config.device, non_blocking=True)
+        for index, (lrbicx8, _, lrbicx2, hr) in enumerate(valid_dataloader):
+            lrbicx8 = lrbicx8.to(config.device, non_blocking=True)
+            lrbicx2 = lrbicx2.to(config.device, non_blocking=True)
             hr = hr.to(config.device, non_blocking=True)
 
             # Mixed precision
             with amp.autocast():
-                _, _, srx8 = model(lr)
-                loss = criterion(srx8, hr)
+                _, srx4, _ = model(lrbicx8)
+                loss = criterion(srx4, lrbicx2)
 
             # measure accuracy and record loss
-            psnr = 10. * torch.log10(1. / torch.mean((srx8 - hr) ** 2))
+            psnr = 10. * torch.log10(1. / torch.mean((srx4 - lrbicx2) ** 2))
             losses.update(loss.item(), hr.size(0))
             psnres.update(psnr, hr.size(0))
 
@@ -236,7 +236,7 @@ def validate(model, valid_dataloader, criterion, epoch, writer) -> float:
             batch_time.update(time.time() - end)
             end = time.time()
 
-            if index % config.print_frequency == 0 or index == batches:
+            if index % config.print_frequency == 0:
                 progress.display(index)
 
         writer.add_scalar("Valid/PSNR", psnres.avg, epoch + 1)
@@ -249,7 +249,7 @@ def validate(model, valid_dataloader, criterion, epoch, writer) -> float:
 class AverageMeter(object):
     """Computes and stores the average and current value"""
 
-    def __init__(self, name, fmt=':f'):
+    def __init__(self, name, fmt=":f"):
         self.name = name
         self.fmt = fmt
         self.reset()
@@ -267,7 +267,7 @@ class AverageMeter(object):
         self.avg = self.sum / self.count
 
     def __str__(self):
-        fmtstr = '{name} {val' + self.fmt + '} ({avg' + self.fmt + '})'
+        fmtstr = "{name} {val" + self.fmt + "} ({avg" + self.fmt + "})"
         return fmtstr.format(**self.__dict__)
 
 
@@ -280,12 +280,12 @@ class ProgressMeter(object):
     def display(self, batch):
         entries = [self.prefix + self.batch_fmtstr.format(batch)]
         entries += [str(meter) for meter in self.meters]
-        print('\t'.join(entries))
+        print("\t".join(entries))
 
     def _get_batch_fmtstr(self, num_batches):
         num_digits = len(str(num_batches // 1))
-        fmt = '{:' + str(num_digits) + 'd}'
-        return '[' + fmt + '/' + fmt.format(num_batches) + ']'
+        fmt = "{:" + str(num_digits) + "d}"
+        return "[" + fmt + "/" + fmt.format(num_batches) + "]"
 
 
 if __name__ == "__main__":
