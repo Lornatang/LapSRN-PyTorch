@@ -36,7 +36,7 @@ def main():
         raw_image = Image.open(f"{args.inputs_dir}/{file_name}")
 
         index = 0
-        for scale_ratio in [1.0, 0.7, 0.5]:
+        for scale_ratio in [1.0, 0.9, 0.8, 0.7, 0.6, 0.5]:
             for rotate_angle in [0, 90, 180, 270]:
                 for flip_prob in [0.0, 1.0]:
                     # Process HR image
@@ -68,7 +68,7 @@ if __name__ == "__main__":
     parser.add_argument("--inputs_dir", type=str, default="TB291/original", help="Path to input image directory. (Default: `TB291/original`)")
     parser.add_argument("--output_dir", type=str, default="TB291", help="Path to generator image directory. (Default: `TB291`)")
     parser.add_argument("--image_size", type=int, default=128, help="Low-resolution image size from raw image. (Default: 128)")
-    parser.add_argument("--step", type=int, default=64, help="Crop image similar to sliding window.  (Default: 64)")
+    parser.add_argument("--step", type=int, default=128, help="Crop image similar to sliding window.  (Default: 128)")
     args = parser.parse_args()
 
     main()
