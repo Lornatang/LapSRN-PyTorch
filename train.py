@@ -230,7 +230,7 @@ def validate(model, valid_dataloader, criterion, epoch, writer) -> float:
             # measure accuracy and record loss
             psnr = 10. * torch.log10(1. / torch.mean((srx4 - lrbicx2) ** 2))
             losses.update(loss.item(), hr.size(0))
-            psnres.update(psnr, hr.size(0))
+            psnres.update(psnr.item(), hr.size(0))
 
             # measure elapsed time
             batch_time.update(time.time() - end)
