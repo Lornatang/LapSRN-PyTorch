@@ -2,8 +2,7 @@
 
 ### Overview
 
-This repository contains an op-for-op PyTorch reimplementation
-of [Deep Laplacian Pyramid Networks for Fast and Accurate Super-Resolution](https://arxiv.org/pdf/1704.03915.pdf).
+This repository contains an op-for-op PyTorch reimplementation of [Deep Laplacian Pyramid Networks for Fast and Accurate Super-Resolution](https://arxiv.org/pdf/1704.03915.pdf).
 
 ### Table of contents
 
@@ -36,8 +35,8 @@ favorably against the state-of-the-art methods in terms of speed and accuracy.
 
 ## Download weights
 
-- [Google Driver](https://drive.google.com/drive/folders/112QV7vQwFNHEC7DDZoJWAmW8tNOgHmE0?usp=sharing)
-- [Baidu Driver](https://pan.baidu.com/s/1MLhm_TZL5gNWLOOKxmm9JA) access:`llot`
+- [Google Driver](https://drive.google.com/drive/folders/1WZN2bO7SN7bkcQH65VYznQR90LDhiNBd?usp=sharing)
+- [Baidu Driver](https://pan.baidu.com/s/1yNs4rqIb004-NKEdKBJtYg?pwd=llot)
 
 ## Download datasets
 
@@ -46,16 +45,7 @@ favorably against the state-of-the-art methods in terms of speed and accuracy.
 #### TB291
 
 - Image format
-    - [Google Driver](https://drive.google.com/drive/folders/13wiE6YqIhyix0RFxpFONJ7Zz_00CttdX?usp=sharing)
     - [Baidu Driver](https://pan.baidu.com/s/1mhbFj0Nvwthmgx07Gas5BQ) access: `llot`
-
-- LMDB format (train)
-    - [Google Driver](https://drive.google.com/drive/folders/1BPqN08QHk_xFnMJWMS8grfh_vesVs8Jf?usp=sharing)
-    - [Baidu Driver](https://pan.baidu.com/s/1eqeORnKcTmGatx2kAG92-A) access: `llot`
-
-- LMDB format (valid)
-    - [Google Driver](https://drive.google.com/drive/folders/1bYqqKk6NJ9wUfxTH2t_LbdMTB04OUicc?usp=sharing)
-    - [Baidu Driver](https://pan.baidu.com/s/1W34MeEtLY0m-bOrnaveVmw) access: `llot`
 
 ### Download valid dataset
 
@@ -81,23 +71,23 @@ favorably against the state-of-the-art methods in terms of speed and accuracy.
 
 Modify the contents of the file as follows.
 
-- line 24: `upscale_factor` change to the magnification you need to enlarge.
-- line 25: `mode` change Set to valid mode.
-- line 91: `model_path` change weight address after training.
+- line 25: `upscale_factor` change to the magnification you need to enlarge.
+- line 27: `mode` change Set to valid mode.
+- line 67: `model_path` change weight address after training.
 
 ## Train
 
 Modify the contents of the file as follows.
 
-- line 24: `upscale_factor` change to the magnification you need to enlarge.
-- line 25: `mode` change Set to train mode.
+- line 25: `upscale_factor` change to the magnification you need to enlarge.
+- line 27: `mode` change Set to train mode.
 
 If you want to load weights that you've trained before, modify the contents of the file as follows.
 
-- line 53: `resume` change to `True`.
-- line 54: `strict` Transfer learning is set to `False`, incremental learning is set to `True`.
-- line 55: `start_epoch` change number of training iterations in the previous round.
-- line 56: `resume_weight` the weight address that needs to be loaded.
+- line 41: `resume` change to `True`.
+- line 42: `strict` Transfer learning is set to `False`, incremental learning is set to `True`.
+- line 43: `start_epoch` change number of training iterations in the previous round.
+- line 44: `resume_weight` the weight address that needs to be loaded.
 
 ## Result
 
@@ -107,9 +97,9 @@ In the following table, the value in `()` indicates the result of the project, a
 
 | Dataset | Scale |       PSNR       | 
 |:-------:|:-----:|:----------------:|
-|  Set5   |   2   | 37.25(**37.19**) |
+|  Set5   |   2   | 37.25(**37.40**) |
 |  Set5   |   4   | 31.33(**31.20**) |
-|  Set5   |   8   |   26.14(**-**)   |
+|  Set5   |   8   | 26.14(**25.91**) |
 
 Low Resolution / Super Resolution / High Resolution
 <span align="center"><img src="assets/result.png"/></span>

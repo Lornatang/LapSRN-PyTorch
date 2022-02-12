@@ -25,11 +25,6 @@ from model import LapSRN
 
 
 def main() -> None:
-    # Create a folder of super-resolution experiment results
-    results_dir = os.path.join("results", "test", config.exp_name)
-    if not os.path.exists(results_dir):
-        os.makedirs(results_dir)
-
     # Initialize the super-resolution model
     print("Build SR model...")
     model = LapSRN().to(config.device)
@@ -40,6 +35,11 @@ def main() -> None:
     state_dict = torch.load(config.model_path, map_location=config.device)
     model.load_state_dict(state_dict)
     print(f"Load SR model weights `{os.path.abspath(config.model_path)}` successfully.")
+
+    # Create a folder of super-resolution experiment results
+    results_dir = os.path.join("results", "test", config.exp_name)
+    if not os.path.exists(results_dir):
+        os.makedirs(results_dir)
 
     # Start the verification mode of the model.
     model.eval()
@@ -59,7 +59,7 @@ def main() -> None:
         sr_image_path = os.path.join(config.sr_dir, file_names[index])
         hr_image_path = os.path.join(config.hr_dir, file_names[index])
 
-        print(f"Processing `{os.path.abspath(hr_image_path)}`...")
+        print(f"Processing `{os.path.abspath(lr_image_path)}`...")
         lr_image = Image.open(lr_image_path).convert("RGB")
         bic_image = lr_image.resize([int(lr_image.width * config.upscale_factor), int(lr_image.height * config.upscale_factor)], Image.BICUBIC)
         hr_image = Image.open(hr_image_path).convert("RGB")
@@ -80,12 +80,12 @@ def main() -> None:
 
         # Only reconstruct the Y channel image data.
         with torch.no_grad():
-            _, sr_y_tensor_x4, _ = model(lr_y_tensor)
+            sr_y_tensor_x2, sr_y_tensor_x4, sr_y_tensor_x8 = model(lr_y_tensor)
 
         # Cal PSNR
-        total_psnr += 10. * torch.log10(1. / torch.mean((sr_y_tensor_x4 - hr_y_tensor) ** 2))
+        total_psnr += 10. * torch.log10(1. / torch.mean((sr_y_tensor_x8 - hr_y_tensor) ** 2))
 
-        sr_y_image = imgproc.tensor2image(sr_y_tensor_x4, range_norm=False, half=True)
+        sr_y_image = imgproc.tensor2image(sr_y_tensor_x8, range_norm=False, half=True)
         sr_image = np.array([sr_y_image, bic_ycbcr_image[..., 1], bic_ycbcr_image[..., 2]]).transpose([1, 2, 0])
         sr_image = np.clip(imgproc.convert_ycbcr_to_rgb(sr_image), 0.0, 255.0).astype(np.uint8)
         sr_image = Image.fromarray(sr_image)

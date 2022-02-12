@@ -12,10 +12,8 @@
 # limitations under the License.
 # ==============================================================================
 """Realize the function of dataset preparation."""
-import io
 import os
 
-import lmdb
 import numpy as np
 from PIL import Image
 from torch import Tensor
@@ -25,7 +23,7 @@ from torchvision.transforms.functional import InterpolationMode as IMode
 
 import imgproc
 
-__all__ = ["ImageDataset", "LMDBDataset"]
+__all__ = ["ImageDataset"]
 
 
 class ImageDataset(Dataset):
@@ -41,7 +39,7 @@ class ImageDataset(Dataset):
 
     def __init__(self, dataroot: str, image_size: int, mode: str) -> None:
         super(ImageDataset, self).__init__()
-        self.filenames = [os.path.join(dataroot, x) for x in os.listdir(dataroot)]
+        self.image_file_names = [os.path.join(dataroot, x) for x in os.listdir(dataroot)]
 
         if mode == "train":
             self.hr_transforms = transforms.RandomCrop(image_size)
@@ -54,7 +52,7 @@ class ImageDataset(Dataset):
 
     def __getitem__(self, batch_index: int) -> [Tensor, Tensor, Tensor, Tensor]:
         # Read a batch of image data
-        image = Image.open(self.filenames[batch_index])
+        image = Image.open(self.image_file_names[batch_index])
 
         # Transform image
         hr_image = self.hr_transforms(image)
@@ -83,90 +81,4 @@ class ImageDataset(Dataset):
         return lrbicx8_y_tensor, lrbicx4_y_tensor, lrbicx2_y_tensor, hr_y_tensor
 
     def __len__(self) -> int:
-        return len(self.filenames)
-
-
-class LMDBDataset(Dataset):
-    """Load the data set as a data set in the form of LMDB.
-
-    Attributes:
-        lrbicx2_datasets (list): Low-resolution image data in the dataset (x2)
-        lrbicx4_datasets (list): Low-resolution image data in the dataset (x4)
-        lrbicx8_datasets (list): Low-resolution image data in the dataset (x8)
-        hr_datasets (list): High-resolution image data in the dataset
-
-    """
-
-    def __init__(self, lrbicx2_lmdb_path: str, lrbicx4_lmdb_path: str, lrbicx8_lmdb_path: str,  hr_lmdb_path: str) -> None:
-        super(LMDBDataset, self).__init__()
-        # Create low/high resolution image array
-        self.lrbicx2_datasets = []
-        self.lrbicx4_datasets = []
-        self.lrbicx8_datasets = []
-        self.hr_datasets = []
-
-        # Initialize the LMDB database file address
-        self.lrbicx2_lmdb_path = lrbicx2_lmdb_path
-        self.lrbicx4_lmdb_path = lrbicx4_lmdb_path
-        self.lrbicx8_lmdb_path = lrbicx8_lmdb_path
-        self.hr_lmdb_path = hr_lmdb_path
-
-        # Write image data in LMDB database to memory
-        self.read_lmdb_dataset()
-
-    def __getitem__(self, batch_index: int) -> [Tensor, Tensor]:
-        # Read a batch of image data
-        lrbicx2_image = self.lrbicx2_datasets[batch_index]
-        lrbicx4_image = self.lrbicx4_datasets[batch_index]
-        lrbicx8_image = self.lrbicx8_datasets[batch_index]
-        hr_image = self.hr_datasets[batch_index]
-
-        # Only extract the image data of the Y channel
-        lrbicx2_image = np.array(lrbicx2_image).astype(np.float32)
-        lrbicx4_image = np.array(lrbicx4_image).astype(np.float32)
-        lrbicx8_image = np.array(lrbicx8_image).astype(np.float32)
-        hr_image = np.array(hr_image).astype(np.float32)
-
-        lrbicx2_ycbcr_image = imgproc.convert_rgb_to_ycbcr(lrbicx2_image)
-        lrbicx4_ycbcr_image = imgproc.convert_rgb_to_ycbcr(lrbicx4_image)
-        lrbicx8_ycbcr_image = imgproc.convert_rgb_to_ycbcr(lrbicx8_image)
-        hr_ycbcr_image = imgproc.convert_rgb_to_ycbcr(hr_image)
-
-        # Convert image data into Tensor stream format (PyTorch).
-        # Note: The range of input and output is between [0, 1]
-        lrbicx2_y_tensor = imgproc.image2tensor(lrbicx2_ycbcr_image, range_norm=False, half=False)
-        lrbicx4_y_tensor = imgproc.image2tensor(lrbicx4_ycbcr_image, range_norm=False, half=False)
-        lrbicx8_y_tensor = imgproc.image2tensor(lrbicx8_ycbcr_image, range_norm=False, half=False)
-        hr_y_tensor = imgproc.image2tensor(hr_ycbcr_image, range_norm=False, half=False)
-
-        return lrbicx8_y_tensor, lrbicx4_y_tensor, lrbicx2_y_tensor, hr_y_tensor
-
-    def __len__(self) -> int:
-        return len(self.hr_datasets)
-
-    def read_lmdb_dataset(self) -> [list, list]:
-        # Open two LMDB database writing environments to read low/high image data
-        lrbicx2_lmdb_env = lmdb.open(self.lrbicx2_lmdb_path)
-        lrbicx4_lmdb_env = lmdb.open(self.lrbicx4_lmdb_path)
-        lrbicx8_lmdb_env = lmdb.open(self.lrbicx8_lmdb_path)
-        hr_lmdb_env = lmdb.open(self.hr_lmdb_path)
-
-        # Write the image data in the low-resolution LMDB data set to the memory
-        for _, image_bytes in lrbicx2_lmdb_env.begin().cursor():
-            image = Image.open(io.BytesIO(image_bytes))
-            self.lrbicx2_datasets.append(image)
-
-        # Write the image data in the low-resolution LMDB data set to the memory
-        for _, image_bytes in lrbicx4_lmdb_env.begin().cursor():
-            image = Image.open(io.BytesIO(image_bytes))
-            self.lrbicx4_datasets.append(image)
-
-        # Write the image data in the low-resolution LMDB data set to the memory
-        for _, image_bytes in lrbicx8_lmdb_env.begin().cursor():
-            image = Image.open(io.BytesIO(image_bytes))
-            self.lrbicx8_datasets.append(image)
-
-        # Write the image data in the high-resolution LMDB data set to the memory
-        for _, image_bytes in hr_lmdb_env.begin().cursor():
-            image = Image.open(io.BytesIO(image_bytes))
-            self.hr_datasets.append(image)
+        return len(self.image_file_names)

@@ -34,7 +34,7 @@ class ConvLayer(nn.Module):
     def __init__(self, channels: int) -> None:
         super(ConvLayer, self).__init__()
         self.cl = nn.Sequential(
-            nn.Conv2d(channels, channels, (3, 3), (1, 1), (1, 1), bias=False),
+            nn.Conv2d(channels, channels, (3, 3), (1, 1), (1, 1)),
             nn.LeakyReLU(0.2, True),
         )
 
@@ -45,7 +45,7 @@ class ConvLayer(nn.Module):
 
 
 class LapSRN(nn.Module):
-    def __init__(self):
+    def __init__(self) -> None:
         super(LapSRN, self).__init__()
         self.conv1 = nn.Sequential(
             nn.Conv2d(1, 64, (3, 3), (1, 1), (1, 1)),

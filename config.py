@@ -13,37 +13,25 @@
 # ==============================================================================
 """Realize the parameter configuration function of dataset, model, training and verification code."""
 import torch
-from torch.backends import cudnn as cudnn
+from torch.backends import cudnn
 
-# ==============================================================================
-# General configuration
-# ==============================================================================
+# Random seed to maintain reproducible results
 torch.manual_seed(0)
+# Use GPU for training by default
 device = torch.device("cuda", 0)
+# Turning on when the image size does not change during training can speed up training
 cudnn.benchmark = True
-upscale_factor = 4
+# Image magnification factor
+upscale_factor = 8
+# Current configuration parameter method
 mode = "train"
-exp_name = "baseline"
+# Experiment name, easy to save weights and log files
+exp_name = "lapsrn"
 
-# ==============================================================================
-# Training configuration
-# ==============================================================================
 if mode == "train":
     # Dataset
-    # Image format
     train_image_dir = "data/TB291/LapSRN/train"
     valid_image_dir = "data/TB291/LapSRN/valid"
-
-    # LMDB format
-    train_lrbicx2_lmdb_path = f"data/train_lmdb/LapSRN/TB291_LRbicx2_lmdb"
-    train_lrbicx4_lmdb_path = f"data/train_lmdb/LapSRN/TB291_LRbicx4_lmdb"
-    train_lrbicx8_lmdb_path = f"data/train_lmdb/LapSRN/TB291_LRbicx8_lmdb"
-    train_hr_lmdb_path = f"data/train_lmdb/LapSRN/TB291_HR_lmdb"
-
-    valid_lrbicx2_lmdb_path = f"data/valid_lmdb/LapSRN/TB291_LRbicx2_lmdb"
-    valid_lrbicx4_lmdb_path = f"data/valid_lmdb/LapSRN/TB291_LRbicx4_lmdb"
-    valid_lrbicx8_lmdb_path = f"data/valid_lmdb/LapSRN/TB291_LRbicx8_lmdb"
-    valid_hr_lmdb_path = f"data/valid_lmdb/LapSRN/TB291_HR_lmdb"
 
     image_size = 128
     batch_size = 64
@@ -58,34 +46,22 @@ if mode == "train":
     # Total num epochs
     epochs = 150
 
-    # SGD optimizer parameter (less training and low PSNR)
-    model_optimizer_name = "sgd"
-    model_lr = 1e-3
+    # SGD optimizer parameter
+    model_lr = 1e-4
     model_momentum = 0.9
     model_weight_decay = 1e-4
     model_nesterov = False
-    model_clip_gradient = 1.0
-
-    # Adam optimizer parameter (faster training and better PSNR)
-    # model_optimizer_name = "adam"
-    # model_lr = 1e-3
-    # model_betas = (0.9, 0.999)
-    # model_clip_gradient = 1.0
 
     # Optimizer scheduler parameter
-    lr_scheduler_name = "StepLR"
     lr_scheduler_step_size = 50
-    lr_scheduler_gamma = 0.1
+    lr_scheduler_gamma = 0.5
 
     print_frequency = 100
 
-# ==============================================================================
-# Verify configuration
-# ==============================================================================
 if mode == "valid":
     # Test data address
     lr_dir = f"data/Set5/LRbicx{upscale_factor}"
     sr_dir = f"results/test/{exp_name}"
-    hr_dir = f"data/Set5/GTmod12"
+    hr_dir = f"data/Set5/GTmod8"
 
     model_path = f"results/{exp_name}/last.pth"

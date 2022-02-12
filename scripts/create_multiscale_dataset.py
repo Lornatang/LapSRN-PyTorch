@@ -40,20 +40,19 @@ def main(args) -> None:
 
 
 def worker(image_file_name, args) -> None:
-    raw_image = Image.open(f"{args.images_dir}/{image_file_name}").convert("RGB")
+    image = Image.open(f"{args.images_dir}/{image_file_name}").convert("RGB")
 
     index = 1
     # Data augment
     for scale_ratio in [1.0, 0.9, 0.8, 0.7, 0.6, 0.5]:
         for rotate_angle in [0, 90, 180, 270]:
-            for flip_prob in [0.0, 1.0]:
-                # Process HR image
-                hr_image = raw_image.resize((int(raw_image.width * scale_ratio), int(raw_image.height * scale_ratio)), Image.BICUBIC) if scale_ratio != 1.0 else raw_image
-                hr_image = hr_image.rotate(rotate_angle) if rotate_angle != 0 else hr_image
-                hr_image = hr_image.transpose(Image.FLIP_LEFT_RIGHT) if flip_prob != 0.0 else hr_image
-                # Save all images
-                hr_image.save(f"{args.output_dir}/{image_file_name.split('.')[-2]}_{index:02d}.{image_file_name.split('.')[-1]}")
+            for flip_probability in [0, 1]:
                 index += 1
+                new_image = image.resize((int(image.width * scale_ratio), int(image.height * scale_ratio)), resample=Image.BICUBIC)
+                new_image = new_image.rotate(rotate_angle)
+                new_image = new_image.transpose(Image.FLIP_LEFT_RIGHT) if flip_probability == 1 else new_image
+                # Save all images
+                new_image.save(f"{args.output_dir}/{image_file_name.split('.')[-2]}_{index:04d}.{image_file_name.split('.')[-1]}")
 
 
 if __name__ == "__main__":
