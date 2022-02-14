@@ -54,7 +54,7 @@ if mode == "train":
 
     # Optimizer scheduler parameter
     lr_scheduler_step_size = 50
-    lr_scheduler_gamma = 0.5
+    lr_scheduler_gamma = 0.1
 
     print_frequency = 100
 
