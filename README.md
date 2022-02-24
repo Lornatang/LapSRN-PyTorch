@@ -12,8 +12,6 @@ This repository contains an op-for-op PyTorch reimplementation of [Deep Laplacia
     - [About Deep Laplacian Pyramid Networks for Fast and Accurate Super-Resolution](#about-deep-laplacian-pyramid-networks-for-fast-and-accurate-super-resolution)
     - [Download weights](#download-weights)
     - [Download datasets](#download-datasets)
-        - [Download train dataset](#download-train-dataset)
-        - [Download valid dataset](#download-valid-dataset)
     - [Test](#test)
     - [Train](#train)
     - [Result](#result)
@@ -40,54 +38,30 @@ favorably against the state-of-the-art methods in terms of speed and accuracy.
 
 ## Download datasets
 
-### Download train dataset
+Contains DIV2K, DIV8K, Flickr2K, OST, T91, Set5, Set14, BSDS100 and BSDS200, etc.
 
-#### TB291
-
-- Image format
-    - [Baidu Driver](https://pan.baidu.com/s/1mhbFj0Nvwthmgx07Gas5BQ) access: `llot`
-
-### Download valid dataset
-
-#### Set5
-
-- Image format
-    - [Google Driver](https://drive.google.com/file/d/1GtQuoEN78q3AIP8vkh-17X90thYp_FfU/view?usp=sharing)
-    - [Baidu Driver](https://pan.baidu.com/s/1dlPcpwRPUBOnxlfW5--S5g) access:`llot`
-
-#### Set14
-
-- Image format
-    - [Google Driver](https://drive.google.com/file/d/1CzwwAtLSW9sog3acXj8s7Hg3S7kr2HiZ/view?usp=sharing)
-    - [Baidu Driver](https://pan.baidu.com/s/1KBS38UAjM7bJ_e6a54eHaA) access:`llot`
-
-#### BSD200
-
-- Image format
-    - [Google Driver](https://drive.google.com/file/d/1cdMYTPr77RdOgyAvJPMQqaJHWrD5ma5n/view?usp=sharing)
-    - [Baidu Driver](https://pan.baidu.com/s/1xahPw4dNNc3XspMMOuw1Bw) access:`llot`
+- [Google Driver](https://drive.google.com/drive/folders/1A6lzGeQrFMxPqJehK9s37ce-tPDj20mD?usp=sharing)
+- [Baidu Driver](https://pan.baidu.com/s/1o-8Ty_7q6DiS3ykLU09IVg?pwd=llot)
 
 ## Test
 
 Modify the contents of the file as follows.
 
-- line 25: `upscale_factor` change to the magnification you need to enlarge.
-- line 27: `mode` change Set to valid mode.
-- line 67: `model_path` change weight address after training.
+- line 30: `upscale_factor` change to the magnification you need to enlarge.
+- line 32: `mode` change Set to valid mode.
+- line 70: `model_path` change weight address after training.
 
 ## Train
 
 Modify the contents of the file as follows.
 
-- line 25: `upscale_factor` change to the magnification you need to enlarge.
-- line 27: `mode` change Set to train mode.
+- line 30: `upscale_factor` change to the magnification you need to enlarge.
+- line 32: `mode` change Set to train mode.
 
 If you want to load weights that you've trained before, modify the contents of the file as follows.
 
-- line 41: `resume` change to `True`.
-- line 42: `strict` Transfer learning is set to `False`, incremental learning is set to `True`.
-- line 43: `start_epoch` change number of training iterations in the previous round.
-- line 44: `resume_weight` the weight address that needs to be loaded.
+- line 47: `start_epoch` change number of training iterations in the previous round.
+- line 48: `resume` change to `True`.
 
 ## Result
 
@@ -97,9 +71,9 @@ In the following table, the value in `()` indicates the result of the project, a
 
 | Dataset | Scale |       PSNR       | 
 |:-------:|:-----:|:----------------:|
-|  Set5   |   2   | 37.25(**37.40**) |
-|  Set5   |   4   | 31.33(**31.20**) |
-|  Set5   |   8   | 26.14(**25.91**) |
+|  Set5   |   2   | 37.25(**37.19**) |
+|  Set5   |   4   | 31.33(**31.16**) |
+|  Set5   |   8   | 26.14(**25.80**) |
 
 Low Resolution / Super Resolution / High Resolution
 <span align="center"><img src="assets/result.png"/></span>
@@ -120,7 +94,7 @@ Furthermore, our network generates multi-scale predictions in one feed-forward p
 resource-aware applications. Extensive quantitative and qualitative evaluations on benchmark datasets show that the proposed algorithm performs
 favorably against the state-of-the-art methods in terms of speed and accuracy.
 
-[[Code]](http://vllab.ucmerced.edu/wlai24/LapSRN) [[Paper]](https://arxiv.org/pdf/1704.03915.pdf)
+[[Paper]](https://arxiv.org/pdf/1704.03915.pdf) [[Author's implements(MATLAB)]](https://github.com/phoenix104104/LapSRN) 
 
 ```
 @inproceedings{LapSRN,
